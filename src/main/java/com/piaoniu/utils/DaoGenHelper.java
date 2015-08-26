@@ -14,13 +14,18 @@ import com.sun.tools.javac.code.Types;
 import com.sun.tools.javac.util.Context;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.lang.model.element.ElementKind;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -36,17 +41,63 @@ public class DaoGenHelper {
         this.types = Types.instance(context);
     }
 
+    public static Document parseText(String text) throws DocumentException, SAXException {
+        SAXReader reader = new SAXReader(false);
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        reader.setFeature("http://apache.org/xml/features/validation/schema", false);
+        String encoding = getEncoding(text);
+
+        InputSource source = new InputSource(new StringReader(text));
+        source.setEncoding(encoding);
+
+        Document result = reader.read(source);
+
+        // if the XML parser doesn't provide a way to retrieve the encoding,
+        // specify it manually
+        if (result.getXMLEncoding() == null) {
+            result.setXMLEncoding(encoding);
+        }
+
+        return result;
+    }
+
+    private static String getEncoding(String text) {
+        String result = null;
+
+        String xml = text.trim();
+
+        if (xml.startsWith("<?xml")) {
+            int end = xml.indexOf("?>");
+            String sub = xml.substring(0, end);
+            StringTokenizer tokens = new StringTokenizer(sub, " =\"\'");
+
+            while (tokens.hasMoreTokens()) {
+                String token = tokens.nextToken();
+
+                if ("encoding".equals(token)) {
+                    if (tokens.hasMoreTokens()) {
+                        result = tokens.nextToken();
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
     public String mixMethodToData(DaoGen daoGen, String namespace, Map<String, MapperMethod> methodMap, String data) {
         if (data.isEmpty())
-            data="<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
+            data = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
                     "\n" +
                     "<!DOCTYPE mapper\n" +
                     "PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">\n" +
                     "\n" +
-                    "<mapper namespace=\""+ namespace +"\">\n" +
+                    "<mapper namespace=\"" + namespace + "\">\n" +
                     "</mapper>\n";
         try {
-            Document document = DocumentHelper.parseText(data);
+            Document document = parseText(data);
             Element element = document.getRootElement();
             element.elements().forEach(sqlEle -> {
                 String id = sqlEle.attribute("id").getText();
@@ -55,33 +106,33 @@ public class DaoGenHelper {
             methodMap.forEach(getGenFunc(daoGen, element));
 
             OutputFormat format = OutputFormat.createPrettyPrint();
-            try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
-                XMLWriter writer  = new XMLWriter(outputStream,format);
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                XMLWriter writer = new XMLWriter(outputStream, format);
                 writer.write(document);
                 writer.flush();
 
                 return outputStream.toString("UTF-8");
             }
-        } catch (DocumentException | IOException e) {
+        } catch (DocumentException | IOException | SAXException e) {
             throw new Error(e);
         }
     }
 
-    private BiConsumer<String,MapperMethod> getGenFunc(DaoGen daoGen, Element root) {
-        return (key,method)->{
-            if (! ( handledWithThisPrefix(key, daoGen::insertPrefix, addInsert(daoGen, key, method, root))
-                    || handledWithThisPrefix(key, daoGen::updatePrefix,addUpdate(daoGen,key,method,root))
-                    || handledWithThisPrefix(key, daoGen::findPrefix,addQueryOrFind(daoGen, key, method, root))
-                    || handledWithThisPrefix(key, daoGen::queryPrefix,addQueryOrFind(daoGen, key, method, root))
-                    )){
-                throw new Error("unknown method to be auto gen:"+key);
+    private BiConsumer<String, MapperMethod> getGenFunc(DaoGen daoGen, Element root) {
+        return (key, method) -> {
+            if (!(handledWithThisPrefix(key, daoGen::insertPrefix, addInsert(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::updatePrefix, addUpdate(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::findPrefix, addQueryOrFind(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::queryPrefix, addQueryOrFind(daoGen, key, method, root))
+            )) {
+                throw new Error("unknown method to be auto gen:" + key);
             }
         };
     }
 
     private boolean handledWithThisPrefix(String key, Supplier<String[]> prefixs, Consumer<String> genWithPrefix) {
-        for (String prefix : prefixs.get()){
-            if (key.startsWith(prefix)){
+        for (String prefix : prefixs.get()) {
+            if (key.startsWith(prefix)) {
                 genWithPrefix.accept(prefix);
                 return true;
             }
@@ -109,30 +160,31 @@ public class DaoGenHelper {
         return results;
     }
 
-    private Map<String,List<String>> fieldsMap = Maps.newHashMap();
+    private Map<String, List<String>> fieldsMap = Maps.newHashMap();
 
-    private List<String> getFields(Symbol.TypeSymbol type){
+    private List<String> getFields(Symbol.TypeSymbol type) {
         String typeStr = type.toString();
-        if (!fieldsMap.containsKey(typeStr)){
-            List<Symbol.VarSymbol> varSymbols  = getMember(Symbol.VarSymbol.class, ElementKind.FIELD, type);
+        if (!fieldsMap.containsKey(typeStr)) {
+            List<Symbol.VarSymbol> varSymbols = getMember(Symbol.VarSymbol.class, ElementKind.FIELD, type);
             fieldsMap.put(typeStr, Lists.transform(varSymbols, (Symbol.VarSymbol::toString)));
         }
         return fieldsMap.get(typeStr);
     }
-    private String lowerFirst(String word){
+
+    private String lowerFirst(String word) {
         return Character.toLowerCase(word.charAt(0)) + word.substring(1);
     }
 
-    private static final String COMMENT  = "added by pn-plugin";
+    private static final String COMMENT = "added by pn-plugin";
 
     private Consumer<String> addQueryOrFind(DaoGen daoGen, String key, MapperMethod method, Element root) {
-        return (prefix)->{
+        return (prefix) -> {
             Element sql = root.addElement("select");
             sql.addComment(COMMENT);
             sql.addAttribute("id", key);
             sql.addAttribute("resultType", method.getReturnType().toString());
             sql.addText("");
-            String left = key.replaceFirst(prefix,"");
+            String left = key.replaceFirst(prefix, "");
             String[] params = left.split(daoGen.separator());
             if (params.length == 0)
                 throw new Error("At least need one param");
@@ -145,7 +197,7 @@ public class DaoGenHelper {
                     .append(" where ");
             int len = params.length;
             int cur = 0;
-            for (String param : params){
+            for (String param : params) {
                 cur++;
                 String realParam = lowerFirst(param);
                 select.append(realParam)
@@ -153,17 +205,17 @@ public class DaoGenHelper {
                         .append("#{")
                         .append(realParam)
                         .append("}");
-                if (cur<len) select.append(" and ");
+                if (cur < len) select.append(" and ");
             }
             sql.addText(select.toString());
         };
     }
 
     private Consumer<String> addUpdate(DaoGen daoGen, String key, MapperMethod method, Element root) {
-        return (prefix)->{
+        return (prefix) -> {
             Element sql = root.addElement("update");
             sql.addComment(COMMENT);
-            sql.addAttribute("id",key);
+            sql.addAttribute("id", key);
 
             StringBuilder updateSql = new StringBuilder(50);
             updateSql.append("update ")
@@ -193,11 +245,12 @@ public class DaoGenHelper {
         };
     }
 
-    private Stream<String> getInsertFieldsStream(String pk, List<String> fields){
+    private Stream<String> getInsertFieldsStream(String pk, List<String> fields) {
         return fields.stream().filter((field) -> !pk.equals(field));
     }
+
     private Consumer<String> addInsert(DaoGen daoGen, String key, MapperMethod method, Element root) {
-        return (prefix)->{
+        return (prefix) -> {
             Element sql = root.addElement("insert");
             sql.addComment(COMMENT);
             sql.addAttribute("id", key);
@@ -210,11 +263,11 @@ public class DaoGenHelper {
             String pk = daoGen.primaryKey();
             List<String> fields = getFields(method.getFirstParamType());
             insertSql.append("(")
-                    .append(Joiner.on(", ").join(getInsertFieldsStream(pk,fields).iterator()))
+                    .append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).iterator()))
                     .append(")\n");
 
             insertSql.append("values (");
-            insertSql.append(Joiner.on(", ").join(getInsertFieldsStream(pk,fields).map(field -> {
+            insertSql.append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).map(field -> {
                 if (method.getDaoEnv().getCreateTimeSet().contains(field)
                         || method.getDaoEnv().getUpdateTimeSet().contains(field))
                     return "now()";
@@ -226,11 +279,11 @@ public class DaoGenHelper {
             Element selectKey = sql.addElement("selectKey");
             selectKey.addAttribute("resultType", "int");
             selectKey.addAttribute("keyProperty", pk);
-            selectKey.addText("SELECT @@IDENTITY AS "+pk);
+            selectKey.addText("SELECT @@IDENTITY AS " + pk);
         };
     }
 
-    public static MapperMethod toMapperMethod(DaoEnv daoEnv,Symbol.MethodSymbol methodSymbol){
+    public static MapperMethod toMapperMethod(DaoEnv daoEnv, Symbol.MethodSymbol methodSymbol) {
         return new MapperMethod(daoEnv, methodSymbol);
     }
 
