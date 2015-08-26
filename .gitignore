@@ -1,0 +1,12 @@
+.settings
+.project
+.idea
+*.iml
+**/.settings
+**/.classpath
+**/.eclipse
+**/.project
+**/target
+**/bin
+MANIFEST.MF
+.DS_Store
