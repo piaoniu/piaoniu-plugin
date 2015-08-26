@@ -58,6 +58,7 @@ public class DaoGenHelper {
             try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
                 XMLWriter writer  = new XMLWriter(outputStream,format);
                 writer.write(document);
+                writer.flush();
 
                 return outputStream.toString("UTF-8");
             }
