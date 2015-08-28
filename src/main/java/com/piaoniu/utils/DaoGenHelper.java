@@ -16,6 +16,7 @@ import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.springframework.util.StringUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -23,9 +24,7 @@ import javax.lang.model.element.ElementKind;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -186,25 +185,25 @@ public class DaoGenHelper {
 
     private Consumer<String> addCountBy(DaoGen daoGen, String key, MapperMethod method, Element root) {
         return addCount(daoGen,key,method,root,(params)-> {
-            if (params.length == 0)
+            if (params.isEmpty())
                 throw new Error("At least need one param");
         });
     }
 
-    private Consumer<String> addCount(DaoGen daoGen, String key, MapperMethod method, Element root,Consumer<String[]> validator) {
+    private Consumer<String> addCount(DaoGen daoGen, String key, MapperMethod method, Element root,Consumer<List<String>> validator) {
         return (prefix) -> {
             Element sql = root.addElement("select");
             sql.addComment(COMMENT);
             sql.addAttribute("id", key);
             sql.addAttribute("resultType", "int");
             String left = key.replaceFirst(prefix, "");
-            String[] params = left.split(daoGen.separator());
+            List<String> params = split(left, daoGen.separator());
             validator.accept(params);
             StringBuilder select = new StringBuilder(50);
             select.append("select count(1) from ")
                     .append(method.getDaoEnv().getTableName());
-            int len = params.length;
-            if (len>0) select.append(" where ");
+            int len = params.size();
+            if (!params.isEmpty()) select.append(" where ");
             int cur = 0;
             for (String param : params) {
                 cur++;
@@ -216,24 +215,33 @@ public class DaoGenHelper {
                         .append("}");
                 if (cur < len) select.append(" and ");
             }
-            select.append(" orderBy ").append(daoGen.primaryKey());
+            select.append(" order by ").append(daoGen.primaryKey());
             sql.addText(select.toString());
         };
+    }
 
+    private static List<String> split(String left, String separator) {
+        List<String> results = new ArrayList<>();
+        if (StringUtils.isEmpty(left)) return results;
+        for (String str:left.split(separator)) {
+            if (!StringUtils.isEmpty(str))
+                results.add(str);
+        }
+        return results;
     }
 
     private Consumer<String> addQueryAll(DaoGen daoGen, String key, MapperMethod method, Element root) {
         return addQuery(daoGen,key,method,root,(params)-> {});
     }
 
-    private Consumer<String> addQuery(DaoGen daoGen, String key, MapperMethod method, Element root,Consumer<String[]> validator) {
+    private Consumer<String> addQuery(DaoGen daoGen, String key, MapperMethod method, Element root,Consumer<List<String>> validator) {
         return (prefix) -> {
             Element sql = root.addElement("select");
             sql.addComment(COMMENT);
             sql.addAttribute("id", key);
             sql.addAttribute("resultType", method.getReturnType().toString());
             String left = key.replaceFirst(prefix, "");
-            String[] params = left.split(daoGen.separator());
+            List<String> params = split(left, daoGen.separator());
             validator.accept(params);
             StringBuilder select = new StringBuilder(50);
             List<String> fields = getFields(method.getReturnType());
@@ -241,8 +249,8 @@ public class DaoGenHelper {
                     .append(Joiner.on(", ").join(fields))
                     .append(" from ")
                     .append(method.getDaoEnv().getTableName());
-            int len = params.length;
-            if (len>0) select.append(" where ");
+            int len = params.size();
+            if (!params.isEmpty()) select.append(" where ");
             int cur = 0;
             for (String param : params) {
                 cur++;
@@ -254,15 +262,15 @@ public class DaoGenHelper {
                         .append("}");
                 if (cur < len) select.append(" and ");
             }
-            select.append(" orderBy ").append(daoGen.primaryKey());
+            select.append(" order by ").append(daoGen.primaryKey());
             sql.addText(select.toString());
         };
 
     }
 
     private Consumer<String> addQueryOrFind(DaoGen daoGen, String key, MapperMethod method, Element root) {
-        return addQuery(daoGen,key,method,root,(params)-> {
-            if (params.length == 0) throw new Error("At least need one param");
+        return addQuery(daoGen, key, method, root, (params) -> {
+            if (params.isEmpty()) throw new Error("At least need one param");
         });
     }
 
