@@ -8,6 +8,9 @@ public @interface DaoGen {
     String[] queryPrefix() default {"queryBy"};
 
     String[] updatePrefix() default {"update"};
+    String[] countPrefix() default {"countBy"};
+    String[] countAllPrefix() default {"countAll"};
+    String[] queryAllPrefix() default {"queryAll"};
 
     //String[] count() default {"countBy"};
     String separator() default "And";
