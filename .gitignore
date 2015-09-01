@@ -10,3 +10,4 @@
 **/bin
 MANIFEST.MF
 .DS_Store
+/.apt_generated/
