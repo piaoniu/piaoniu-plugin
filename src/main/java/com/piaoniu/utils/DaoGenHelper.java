@@ -208,7 +208,9 @@ public class DaoGenHelper {
             for (String param : params) {
                 cur++;
                 String realParam = lowerFirst(param);
-                select.append(realParam)
+                select.append("`")
+                        .append(realParam)
+                        .append("`")
                         .append(" = ")
                         .append("#{")
                         .append(realParam)
@@ -246,7 +248,7 @@ public class DaoGenHelper {
             StringBuilder select = new StringBuilder(50);
             List<String> fields = getFields(method.getReturnType());
             select.append("select ")
-                    .append(Joiner.on(", ").join(fields))
+                    .append(Joiner.on(", ").join(fields.stream().map(f-> "`" + f + "`").iterator()))
                     .append(" from ")
                     .append(method.getDaoEnv().getTableName());
             int len = params.size();
@@ -293,14 +295,14 @@ public class DaoGenHelper {
                                     !method.getDaoEnv().getCreateTimeSet().contains(field)))
                                     .map((field -> {
                                         if (method.getDaoEnv().getUpdateTimeSet().contains(field))
-                                            return field + " = " + "now()";
-                                        else return field + " = " + "#{" + field + "} ";
+                                            return "`" + field + "` = " + "now()";
+                                        else return "`" + field + "` = " + "#{" + field + "} ";
                                     }))
                                     .iterator()));
 
-            updateSql.append("Where ")
+            updateSql.append("Where `")
                     .append(pk)
-                    .append(" = ")
+                    .append("` = ")
                     .append("#{")
                     .append(pk)
                     .append("}");
@@ -326,7 +328,7 @@ public class DaoGenHelper {
             String pk = daoGen.primaryKey();
             List<String> fields = getFields(method.getFirstParamType());
             insertSql.append("(")
-                    .append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).iterator()))
+                    .append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).map(f -> "`"+f + "`").iterator()))
                     .append(")\n");
 
             insertSql.append("values (");
