@@ -127,6 +127,7 @@ public class DaoGenHelper {
                     || handledWithThisPrefix(key, daoGen::countPrefix, addCountBy(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::countAllPrefix, addCountAll(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::removePrefix, addRemove(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::batchInsertPrefix, addBatchInsert(daoGen, key, method, root))
             )) {
                 throw new Error("unknown method to be auto gen:" + key);
             }
@@ -344,6 +345,42 @@ public class DaoGenHelper {
 
     private Stream<String> getInsertFieldsStream(String pk, List<String> fields) {
         return fields.stream().filter((field) -> !pk.equals(field));
+    }
+
+
+    private Consumer<String> addBatchInsert(DaoGen daoGen, String key, MapperMethod method, Element root) {
+        return (prefix) -> {
+            Element sql = root.addElement("insert");
+            sql.addComment(COMMENT);
+            sql.addAttribute("id", key);
+
+            StringBuilder insertSql = new StringBuilder(50);
+            insertSql.append("insert into ")
+                    .append(method.getDaoEnv().getTableName())
+                    .append("\n");
+
+            String pk = daoGen.primaryKey();
+            List<String> fields = getFields(method.getFirstParamType());
+            insertSql.append("(")
+                    .append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).map(f -> "`"+f + "`").iterator()))
+                    .append(")\n");
+
+            insertSql.append("values ");
+            sql.addText(insertSql.toString());
+            Element foreach = sql.addElement("foreach");
+            foreach.addAttribute("collection","list");
+            foreach.addAttribute("item", "item");
+            foreach.addAttribute("separator", ",");
+            StringBuilder eachSql = new StringBuilder(50);
+            eachSql.append("(").append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).map(field -> {
+                if (method.getDaoEnv().getCreateTimeSet().contains(field)
+                        || method.getDaoEnv().getUpdateTimeSet().contains(field))
+                    return "now()";
+                else return "#{item." + field + "}";
+            }).iterator()));
+            eachSql.append(")");
+            foreach.addText(eachSql.toString());
+        };
     }
 
     private Consumer<String> addInsert(DaoGen daoGen, String key, MapperMethod method, Element root) {

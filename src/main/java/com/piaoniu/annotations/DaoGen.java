@@ -3,6 +3,8 @@ package com.piaoniu.annotations;
 public @interface DaoGen {
     String[] insertPrefix() default {"insert"};
 
+    String[] batchInsertPrefix() default {"batchInsert"};
+
     String[] findPrefix() default {"findBy"};
 
     String[] removePrefix() default {"removeBy"};
