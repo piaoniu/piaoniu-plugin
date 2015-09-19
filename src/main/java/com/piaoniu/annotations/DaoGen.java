@@ -5,6 +5,8 @@ public @interface DaoGen {
 
     String[] findPrefix() default {"findBy"};
 
+    String[] removePrefix() default {"removeBy"};
+
     String[] queryPrefix() default {"queryBy"};
 
     String[] updatePrefix() default {"update"};

@@ -126,9 +126,40 @@ public class DaoGenHelper {
                     || handledWithThisPrefix(key, daoGen::queryAllPrefix, addQueryAll(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::countPrefix, addCountBy(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::countAllPrefix, addCountAll(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::removePrefix, addRemove(daoGen, key, method, root))
             )) {
                 throw new Error("unknown method to be auto gen:" + key);
             }
+        };
+    }
+
+    private Consumer<String> addRemove(DaoGen daoGen, String key, MapperMethod method, Element root) {
+        return (prefix) -> {
+            Element sql = root.addElement("delete");
+            sql.addComment(COMMENT);
+            sql.addAttribute("id", key);
+            String left = key.replaceFirst(prefix, "");
+            List<String> params = split(left, daoGen.separator());
+            if (params.isEmpty()) throw new Error("Remove method needs at least  one param");
+            StringBuilder select = new StringBuilder(50);
+            select.append("delete from ")
+                    .append(method.getDaoEnv().getTableName());
+            int len = params.size();
+            if (!params.isEmpty()) select.append(" where ");
+            int cur = 0;
+            for (String param : params) {
+                cur++;
+                String realParam = lowerFirst(param);
+                select.append("`")
+                        .append(realParam)
+                        .append("`")
+                        .append(" = ")
+                        .append("#{")
+                        .append(realParam)
+                        .append("}");
+                if (cur < len) select.append(" and ");
+            }
+            sql.addText(select.toString());
         };
     }
 
