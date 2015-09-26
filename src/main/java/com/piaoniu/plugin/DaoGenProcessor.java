@@ -90,7 +90,10 @@ public class DaoGenProcessor  extends AbstractProcessor {
                 daoGenHelper.getMember(Symbol.MethodSymbol.class, ElementKind.METHOD, classSymbol)
                 .stream()
                 .filter(methodSymbol1 -> !methodsInObjects.contains(methodSymbol1.getSimpleName().toString()))
-                .collect(Collectors.toMap(DaoGenHelper::getMethodName, gen));
+                .filter(m -> m.getAnnotationMirrors()
+                        .stream()
+                        .noneMatch(c -> c.getAnnotationType().toString().contains("org.apache.ibatis.annotations")))
+                        .collect(Collectors.toMap(DaoGenHelper::getMethodName, gen));
         return daoGenHelper.mixMethodToData(daoGen, classSymbol.toString(),methodMap,data);
     }
 
