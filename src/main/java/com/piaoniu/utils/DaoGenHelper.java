@@ -328,7 +328,7 @@ public class DaoGenHelper {
                                     !method.getDaoEnv().getCreateTimeSet().contains(field)))
                                     .map((field -> {
                                         if (method.getDaoEnv().getUpdateTimeSet().contains(field))
-                                            return "`" + field + "` = " + "now()";
+                                            return "`" + field + "` = " + "now() ";
                                         else return "`" + field + "` = " + "#{" + field + "} ";
                                     }))
                                     .iterator()));
