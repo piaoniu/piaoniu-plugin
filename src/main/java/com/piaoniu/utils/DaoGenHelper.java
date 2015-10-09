@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DaoGenHelper {
@@ -200,7 +201,7 @@ public class DaoGenHelper {
         String typeStr = type.toString();
         if (!fieldsMap.containsKey(typeStr)) {
             List<Symbol.VarSymbol> varSymbols = getMember(Symbol.VarSymbol.class, ElementKind.FIELD, type);
-            fieldsMap.put(typeStr, Lists.transform(varSymbols, (Symbol.VarSymbol::toString)));
+            fieldsMap.put(typeStr, varSymbols.stream().filter(s->!s.isStatic()).map(Symbol.VarSymbol::toString).collect(Collectors.toList()));
         }
         return fieldsMap.get(typeStr);
     }
