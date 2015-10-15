@@ -11,6 +11,8 @@ public @interface DaoGen {
 
     String[] queryPrefix() default {"queryBy"};
 
+    String[] queryInPrefix() default {"queryIn"};
+
     String[] updatePrefix() default {"update"};
 
     String[] countPrefix() default {"countBy"};

@@ -128,10 +128,46 @@ public class DaoGenHelper {
                     || handledWithThisPrefix(key, daoGen::countPrefix, addCountBy(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::countAllPrefix, addCountAll(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::removePrefix, addRemove(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::queryInPrefix, addQueryIn(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::batchInsertPrefix, addBatchInsert(daoGen, key, method, root))
             )) {
                 throw new Error("unknown method to be auto gen:" + key);
             }
+        };
+    }
+
+    private Consumer<String> addQueryIn(DaoGen daoGen, String key, MapperMethod method, Element root) {
+        return (prefix) -> {
+            Element sql = root.addElement("select");
+            sql.addComment(COMMENT);
+            sql.addAttribute("id", key);
+            sql.addAttribute("resultType", method.getReturnType().toString());
+            String left = key.replaceFirst(prefix, "");
+            List<String> params = split(left, daoGen.separator());
+            StringBuilder select = new StringBuilder(50);
+            List<String> fields = getFields(method.getReturnType());
+            select.append("select ")
+                    .append(Joiner.on(", ").join(fields.stream().map(f-> "`" + f + "`").iterator()))
+                    .append(" from ")
+                    .append(method.getDaoEnv().getTableName());
+            int len = params.size();
+            if (len != 1)
+                throw new Error("query in method only support one param");
+            if (!params.isEmpty()) select.append(" where ");
+            String param = params.get(0);
+            if (param.endsWith("s")) param = lowerFirst(param.substring(0,param.length()-1));
+            select.append("`").append(param).append("` in ");
+            sql.addText(select.toString());
+
+            Element each = sql.addElement("foreach");
+            each.addAttribute("item", param);
+            each.addAttribute("collection", param+"s");
+            each.addAttribute("open", "(");
+            each.addAttribute("separator", ",");
+            each.addAttribute("close", ")");
+            each.addText("#{"+param+"}");
+
+            sql.addText(" order by " + daoGen.primaryKey());
         };
     }
 
