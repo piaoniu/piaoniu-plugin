@@ -3,6 +3,8 @@ package com.piaoniu.generator.dao;
 import com.google.common.collect.Sets;
 import com.piaoniu.annotations.DaoGen;
 import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Type;
+import com.sun.tools.javac.util.List;
 
 import java.util.Set;
 
@@ -12,6 +14,7 @@ public class DaoEnv {
     private String tableName;
     private Set<String> createTimeSet;
     private Set<String> updateTimeSet;
+    Type typeParameter;
 
     public DaoEnv(DaoGen daoGen,Symbol.ClassSymbol classSymbol) {
         this.daoGen = daoGen;
@@ -22,6 +25,13 @@ public class DaoEnv {
             tableName = daoGen.tablePrefix()+daoGen.tableName();
             //"Activity{Dao}"
         else tableName = daoGen.tablePrefix()+daoClassName.subSequence(0,daoClassName.length()-3);
+        if (classSymbol.getInterfaces() != null){
+            classSymbol.getInterfaces().forEach(i->{
+                if (i.getTypeArguments()!=null && !i.getTypeArguments().isEmpty())
+                    typeParameter = i.getTypeArguments().get(0);
+
+            });
+        }
     }
 
     public String getTableName() {
@@ -34,5 +44,9 @@ public class DaoEnv {
 
     public Set<String> getCreateTimeSet() {
         return createTimeSet;
+    }
+
+    public Symbol.TypeSymbol getRealTypeByTypeParameter(Type type) {
+        return typeParameter.tsym;
     }
 }

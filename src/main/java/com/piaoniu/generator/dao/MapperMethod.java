@@ -6,8 +6,6 @@ import com.sun.tools.javac.code.Type;
 
 import java.util.List;
 
-import static com.piaoniu.utils.PrintUtils.note;
-
 public class MapperMethod {
     private Symbol.TypeSymbol returnType;
     private String methodName;
@@ -25,6 +23,10 @@ public class MapperMethod {
         //List<String> to return String
         if (type.allparams().size()>0)
             return type.allparams().get(0).tsym;
+
+        if (type instanceof Type.TypeVar){
+            return daoEnv.getRealTypeByTypeParameter(type);
+        }
 
         return type.tsym;
     }

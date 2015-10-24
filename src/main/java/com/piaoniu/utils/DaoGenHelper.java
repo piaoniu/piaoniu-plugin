@@ -218,14 +218,15 @@ public class DaoGenHelper {
         }
         for (Type t : types.closure(classSymbol.type)) {
             Scope scope = t.tsym.members();
+            if (scope == null) continue;
             scope.getElements(symbol -> symbol.getKind() == kind)
-                    .forEach(symbol1 -> results.add(type.cast(symbol1)));
+                    .forEach(s->results.add(type.cast(s)));
         }
         if (classSymbol.owner != null && classSymbol != classSymbol.owner
                 && classSymbol.owner instanceof Symbol.ClassSymbol) {
             results.addAll(getMember(type, kind, classSymbol.owner));
         }
-        if (classSymbol.hasOuterInstance()) {
+        if (classSymbol.type.getEnclosingType() != null && classSymbol.hasOuterInstance()) {
             results.addAll(getMember(type, kind, classSymbol.type.getEnclosingType().asElement()));
         }
         return results;
@@ -422,7 +423,7 @@ public class DaoGenHelper {
             insertSql.append("values ");
             sql.addText(insertSql.toString());
             Element foreach = sql.addElement("foreach");
-            foreach.addAttribute("collection","list");
+            foreach.addAttribute("collection", "list");
             foreach.addAttribute("item", "item");
             foreach.addAttribute("separator", ",");
             StringBuilder eachSql = new StringBuilder(50);
