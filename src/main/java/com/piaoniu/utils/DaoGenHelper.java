@@ -340,7 +340,7 @@ public class DaoGenHelper {
                         .append("}");
                 if (cur < len) select.append(" and ");
             }
-            String order = "DESC";
+            String order = "ASC";
             String orderKey = daoGen.primaryKey();
             if (!orderClause.isEmpty()){
                 if (orderClause.contains(daoGen.orderByWith())){
