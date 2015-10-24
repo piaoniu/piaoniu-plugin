@@ -27,9 +27,10 @@ public class DaoEnv {
         else tableName = daoGen.tablePrefix()+daoClassName.subSequence(0,daoClassName.length()-3);
         if (classSymbol.getInterfaces() != null){
             classSymbol.getInterfaces().forEach(i->{
-                if (i.getTypeArguments()!=null && !i.getTypeArguments().isEmpty())
+                if (i.getTypeArguments()!=null && !i.getTypeArguments().isEmpty()){
+                    if (i.getTypeArguments().size()> 1 || typeParameter != null) throw new RuntimeException("不支持多个类型参数");
                     typeParameter = i.getTypeArguments().get(0);
-
+                }
             });
         }
     }
@@ -47,6 +48,7 @@ public class DaoEnv {
     }
 
     public Symbol.TypeSymbol getRealTypeByTypeParameter(Type type) {
+        if (typeParameter == null) throw new RuntimeException("未从类定义中获取类型变量实例,请联系技术支持");
         return typeParameter.tsym;
     }
 }

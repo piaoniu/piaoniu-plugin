@@ -14,6 +14,9 @@ public class MapperMethod {
 
     public MapperMethod(DaoEnv daoEnv, Symbol.MethodSymbol methodSymbol) {
         this.daoEnv = daoEnv;
+        if (!methodSymbol.getTypeParameters().isEmpty()){
+            throw new RuntimeException("不支持有类型参数的方法生成");
+        }
         this.returnType = getRealType(methodSymbol.getReturnType());
         this.methodName = DaoGenHelper.getMethodName(methodSymbol);
         this.params = methodSymbol.getParameters();
@@ -22,7 +25,7 @@ public class MapperMethod {
     private Symbol.TypeSymbol getRealType(Type type) {
         //List<String> to return String
         if (type.allparams().size()>0)
-            return type.allparams().get(0).tsym;
+            return getRealType(type.allparams().get(0));
 
         if (type instanceof Type.TypeVar){
             return daoEnv.getRealTypeByTypeParameter(type);
