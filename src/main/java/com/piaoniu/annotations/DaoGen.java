@@ -33,4 +33,8 @@ public @interface DaoGen {
     String[] updateTime() default {"updatedAt", "updateTime"};
 
     String tableName() default "";
+
+    String orderBy() default "OrderBy";
+
+    String orderByWith() default "With";
 }

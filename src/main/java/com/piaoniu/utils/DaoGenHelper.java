@@ -312,6 +312,12 @@ public class DaoGenHelper {
             sql.addAttribute("id", key);
             sql.addAttribute("resultType", method.getReturnType().toString());
             String left = key.replaceFirst(prefix, "");
+            String orderClause = "";
+            if (left.contains(daoGen.orderBy())){
+                int index = left.indexOf(daoGen.orderBy());
+                orderClause = left.substring(index+daoGen.orderBy().length(),left.length());
+                left = left.substring(0,index);
+            }
             List<String> params = split(left, daoGen.separator());
             validator.accept(params);
             StringBuilder select = new StringBuilder(50);
@@ -334,7 +340,18 @@ public class DaoGenHelper {
                         .append("}");
                 if (cur < len) select.append(" and ");
             }
-            select.append(" order by ").append(daoGen.primaryKey());
+            String order = "DESC";
+            String orderKey = daoGen.primaryKey();
+            if (!orderClause.isEmpty()){
+                if (orderClause.contains(daoGen.orderByWith())){
+                    int index = orderClause.indexOf(daoGen.orderByWith());
+                    order = orderClause.substring(index+daoGen.orderByWith().length(),orderClause.length());
+                    orderKey = orderClause.substring(0,index);
+                }else {
+                    orderKey = orderClause;
+                }
+            }
+            select.append(" order by ").append(orderKey).append(" ").append(order);
             sql.addText(select.toString());
         };
 
