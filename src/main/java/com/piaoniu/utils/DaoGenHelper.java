@@ -149,7 +149,7 @@ public class DaoGenHelper {
                     .append(" set \n");
 
             String left = key.replaceFirst(prefix, "");
-            List<String> fields = split(left, daoGen.separator());
+            List<String> fields = split(left, daoGen.separator()).stream().map(this::lowerFirst).collect(Collectors.toList());
             fields.add(method.getDaoEnv().getUpdateTime());
             String pk = daoGen.primaryKey();
             updateSql.append(
