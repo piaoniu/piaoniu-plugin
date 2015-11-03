@@ -192,17 +192,26 @@ public class DaoGenHelper {
                 throw new Error("query in method only support one param");
             if (!params.isEmpty()) select.append(" where ");
             String param = params.get(0);
-            if (param.endsWith("s")) param = lowerFirst(param.substring(0,param.length()-1));
-            select.append("`").append(param).append("` in ");
-            sql.addText(select.toString());
 
-            Element each = sql.addElement("foreach");
+            sql.addText(select.toString());
+            if (param.endsWith("s")) param = lowerFirst(param.substring(0,param.length()-1));
+
+            Element choose = sql.addElement("choose");
+            String collection = param+"s";
+            Element when = choose.addElement("when");
+            when.addAttribute("test", collection + " !=null and " + collection + ".size() > 0");
+            when.addText("`" + param + "` in ");
+
+            Element each = when.addElement("foreach");
             each.addAttribute("item", param);
             each.addAttribute("collection", param+"s");
             each.addAttribute("open", "(");
             each.addAttribute("separator", ",");
             each.addAttribute("close", ")");
-            each.addText("#{"+param+"}");
+            each.addText("#{" + param + "}");
+
+            Element otherwise = choose.addElement("otherwise");
+            otherwise.addText(" 1 = 2 ");
 
             sql.addText(" order by " + daoGen.primaryKey());
         };
