@@ -121,15 +121,15 @@ public class DaoGenHelper {
     private BiConsumer<String, MapperMethod> getGenFunc(DaoGen daoGen, Element root) {
         return (key, method) -> {
             if (!(handledWithThisPrefix(key, daoGen::insertPrefix, addInsert(daoGen, key, method, root))
-                    || handledWithThisPrefix(key, daoGen::updatePrefix, addUpdate(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::updateForPrefix, addUpdateFor(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::updatePrefix, addUpdate(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::findPrefix, addQueryOrFind(daoGen, key, method, root))
-                    || handledWithThisPrefix(key, daoGen::queryPrefix, addQueryOrFind(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::queryAllPrefix, addQueryAll(daoGen, key, method, root))
-                    || handledWithThisPrefix(key, daoGen::countPrefix, addCountBy(daoGen, key, method, root))
-                    || handledWithThisPrefix(key, daoGen::countAllPrefix, addCountAll(daoGen, key, method, root))
-                    || handledWithThisPrefix(key, daoGen::removePrefix, addRemove(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::queryInPrefix, addQueryIn(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::queryPrefix, addQueryOrFind(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::countAllPrefix, addCountAll(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::countPrefix, addCountBy(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::removePrefix, addRemove(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::batchInsertPrefix, addBatchInsert(daoGen, key, method, root))
             )) {
                 throw new Error("unknown method to be auto gen:" + key);
