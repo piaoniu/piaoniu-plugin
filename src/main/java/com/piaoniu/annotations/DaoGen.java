@@ -15,6 +15,8 @@ public @interface DaoGen {
 
     String[] updatePrefix() default {"update"};
 
+    String[] updateForPrefix() default {"updateFor"};
+
     String[] countPrefix() default {"countBy"};
 
     String[] countAllPrefix() default {"countAll"};

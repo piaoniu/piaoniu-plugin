@@ -122,6 +122,7 @@ public class DaoGenHelper {
         return (key, method) -> {
             if (!(handledWithThisPrefix(key, daoGen::insertPrefix, addInsert(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::updatePrefix, addUpdate(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::updateForPrefix, addUpdateFor(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::findPrefix, addQueryOrFind(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::queryPrefix, addQueryOrFind(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::queryAllPrefix, addQueryAll(daoGen, key, method, root))
@@ -133,6 +134,41 @@ public class DaoGenHelper {
             )) {
                 throw new Error("unknown method to be auto gen:" + key);
             }
+        };
+    }
+
+    private Consumer<String> addUpdateFor(DaoGen daoGen, String key, MapperMethod method, Element root) {
+        return (prefix) -> {
+            Element sql = root.addElement("update");
+            sql.addComment(COMMENT);
+            sql.addAttribute("id", key);
+
+            StringBuilder updateSql = new StringBuilder(50);
+            updateSql.append("update ")
+                    .append(method.getDaoEnv().getTableName())
+                    .append(" set \n");
+
+            String left = key.replaceFirst(prefix, "");
+            List<String> fields = split(left, daoGen.separator());
+            String pk = daoGen.primaryKey();
+            updateSql.append(
+                    Joiner.on(", ").join(
+                            fields.stream().filter((field -> !field.equals(pk) &&
+                                    !method.getDaoEnv().getCreateTimeSet().contains(field)))
+                                    .map((field -> {
+                                        if (method.getDaoEnv().getUpdateTimeSet().contains(field))
+                                            return "`" + field + "` = " + "now() ";
+                                        else return "`" + field + "` = " + "#{" + field + "} ";
+                                    }))
+                                    .iterator()));
+
+            updateSql.append("Where `")
+                    .append(pk)
+                    .append("` = ")
+                    .append("#{")
+                    .append(pk)
+                    .append("}");
+            sql.addText(updateSql.toString());
         };
     }
 
