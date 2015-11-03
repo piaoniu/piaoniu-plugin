@@ -12,14 +12,14 @@ public class DaoEnv {
     private DaoGen daoGen;
     private String daoClassName;
     private String tableName;
-    private Set<String> createTimeSet;
-    private Set<String> updateTimeSet;
+    private String createTime;
+    private String updateTime;
     Type typeParameter;
 
     public DaoEnv(DaoGen daoGen,Symbol.ClassSymbol classSymbol) {
         this.daoGen = daoGen;
-        createTimeSet = Sets.newHashSet(daoGen.createTime());
-        updateTimeSet = Sets.newHashSet(daoGen.updateTime());
+        createTime = daoGen.createTime();
+        updateTime = daoGen.updateTime();
         daoClassName = classSymbol.getSimpleName().toString();
         if (!daoGen.tableName().isEmpty())
             tableName = daoGen.tablePrefix()+daoGen.tableName();
@@ -39,12 +39,12 @@ public class DaoEnv {
         return tableName;
     }
 
-    public Set<String> getUpdateTimeSet() {
-        return updateTimeSet;
+    public String getUpdateTime() {
+        return updateTime;
     }
 
-    public Set<String> getCreateTimeSet() {
-        return createTimeSet;
+    public String getCreateTime() {
+        return createTime;
     }
 
     public Symbol.TypeSymbol getRealTypeByTypeParameter(Type type) {

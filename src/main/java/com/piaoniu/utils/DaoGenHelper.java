@@ -150,13 +150,14 @@ public class DaoGenHelper {
 
             String left = key.replaceFirst(prefix, "");
             List<String> fields = split(left, daoGen.separator());
+            fields.add(method.getDaoEnv().getUpdateTime());
             String pk = daoGen.primaryKey();
             updateSql.append(
                     Joiner.on(", ").join(
                             fields.stream().filter((field -> !field.equals(pk) &&
-                                    !method.getDaoEnv().getCreateTimeSet().contains(field)))
+                                    !method.getDaoEnv().getCreateTime().equals(field)))
                                     .map((field -> {
-                                        if (method.getDaoEnv().getUpdateTimeSet().contains(field))
+                                        if (method.getDaoEnv().getUpdateTime().equals(field))
                                             return "`" + field + "` = " + "now() ";
                                         else return "`" + field + "` = " + "#{" + field + "} ";
                                     }))
@@ -416,9 +417,9 @@ public class DaoGenHelper {
             updateSql.append(
                     Joiner.on(", ").join(
                             fields.stream().filter((field -> !field.equals(pk) &&
-                                    !method.getDaoEnv().getCreateTimeSet().contains(field)))
+                                    !method.getDaoEnv().getCreateTime().equals(field)))
                                     .map((field -> {
-                                        if (method.getDaoEnv().getUpdateTimeSet().contains(field))
+                                        if (method.getDaoEnv().getUpdateTime().equals(field))
                                             return "`" + field + "` = " + "now() ";
                                         else return "`" + field + "` = " + "#{" + field + "} ";
                                     }))
@@ -464,8 +465,8 @@ public class DaoGenHelper {
             foreach.addAttribute("separator", ",");
             StringBuilder eachSql = new StringBuilder(50);
             eachSql.append("(").append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).map(field -> {
-                if (method.getDaoEnv().getCreateTimeSet().contains(field)
-                        || method.getDaoEnv().getUpdateTimeSet().contains(field))
+                if (method.getDaoEnv().getCreateTime().contains(field)
+                        || method.getDaoEnv().getUpdateTime().contains(field))
                     return "now()";
                 else return "#{item." + field + "}";
             }).iterator()));
@@ -493,8 +494,8 @@ public class DaoGenHelper {
 
             insertSql.append("values (");
             insertSql.append(Joiner.on(", ").join(getInsertFieldsStream(pk, fields).map(field -> {
-                if (method.getDaoEnv().getCreateTimeSet().contains(field)
-                        || method.getDaoEnv().getUpdateTimeSet().contains(field))
+                if (method.getDaoEnv().getCreateTime().contains(field)
+                        || method.getDaoEnv().getUpdateTime().contains(field))
                     return "now()";
                 else return "#{" + field + "}";
             }).iterator()));

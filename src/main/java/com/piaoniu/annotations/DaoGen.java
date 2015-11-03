@@ -30,9 +30,9 @@ public @interface DaoGen {
 
     String primaryKey() default "id";
 
-    String[] createTime() default {"createdAt","addTime"};
+    String createTime() default "addTime";
 
-    String[] updateTime() default {"updatedAt", "updateTime"};
+    String updateTime() default "updateTime";
 
     String tableName() default "";
 
