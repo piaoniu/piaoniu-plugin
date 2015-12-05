@@ -441,9 +441,9 @@ public class DaoGenHelper {
                                         if (method.getDaoEnv().getUpdateTime().equals(field))
                                             return "`" + field + "` = " + "now() ";
                                         else
-                                            return "`" + field + "` = " + "#{" + entity != null ?
+                                            return "`" + field + "` = " + "#{" + (entity != null ?
                                                     entity + "." :
-                                                    "" + field + "} ";
+                                                    "") + field + "} ";
                                     }))
                                     .iterator()));
 
