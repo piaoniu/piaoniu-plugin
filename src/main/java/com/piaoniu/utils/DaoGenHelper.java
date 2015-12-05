@@ -424,7 +424,7 @@ public class DaoGenHelper {
             List<String> fields = getFields(method.getFirstParamType());
             String pk = daoGen.primaryKey();
             String updateByField;
-            final String entity;
+            String entity;
             if (key.startsWith("updateBy")){
                 updateByField = lowerFirst(key.substring(8));
                 entity = "entity";
