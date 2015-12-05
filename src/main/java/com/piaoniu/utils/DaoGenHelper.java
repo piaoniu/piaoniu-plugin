@@ -424,10 +424,13 @@ public class DaoGenHelper {
             List<String> fields = getFields(method.getFirstParamType());
             String pk = daoGen.primaryKey();
             String updateByField;
+            final String entity;
             if (key.startsWith("updateBy")){
                 updateByField = lowerFirst(key.substring(8));
+                entity = "entity";
             }else{
                 updateByField = pk;
+                entity = null;
             }
             updateSql.append(
                     Joiner.on(", ").join(
@@ -437,7 +440,10 @@ public class DaoGenHelper {
                                     .map((field -> {
                                         if (method.getDaoEnv().getUpdateTime().equals(field))
                                             return "`" + field + "` = " + "now() ";
-                                        else return "`" + field + "` = " + "#{" + field + "} ";
+                                        else
+                                            return "`" + field + "` = " + "#{" + entity != null ?
+                                                    entity + "." :
+                                                    "" + field + "} ";
                                     }))
                                     .iterator()));
 
