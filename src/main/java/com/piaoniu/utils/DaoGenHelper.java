@@ -231,20 +231,24 @@ public class DaoGenHelper {
             int len = params.size();
             if (!params.isEmpty()) select.append(" where ");
             int cur = 0;
-            for (String param : params) {
-                cur++;
-                String realParam = lowerFirst(param);
-                select.append("`")
-                        .append(realParam)
-                        .append("`")
-                        .append(" = ")
-                        .append("#{")
-                        .append(realParam)
-                        .append("}");
-                if (cur < len) select.append(" and ");
-            }
+            appendParams(params, select, len, cur);
             sql.addText(select.toString());
         };
+    }
+
+    private void appendParams(List<String> params, StringBuilder select, int len, int cur) {
+        for (String param : params) {
+            cur++;
+            String realParam = lowerFirst(param);
+            select.append("`")
+                    .append(realParam)
+                    .append("`")
+                    .append(" = ")
+                    .append("#{")
+                    .append(realParam)
+                    .append("}");
+            if (cur < len) select.append(" and ");
+        }
     }
 
     private boolean handledWithThisPrefix(String key, Supplier<String[]> prefixs, Consumer<String> genWithPrefix) {
@@ -321,18 +325,7 @@ public class DaoGenHelper {
             int len = params.size();
             if (!params.isEmpty()) select.append(" where ");
             int cur = 0;
-            for (String param : params) {
-                cur++;
-                String realParam = lowerFirst(param);
-                select.append("`")
-                        .append(realParam)
-                        .append("`")
-                        .append(" = ")
-                        .append("#{")
-                        .append(realParam)
-                        .append("}");
-                if (cur < len) select.append(" and ");
-            }
+            appendParams(params, select, len, cur);
             select.append(" order by ").append(daoGen.primaryKey());
             sql.addText(select.toString());
         };
@@ -376,17 +369,7 @@ public class DaoGenHelper {
             int len = params.size();
             if (!params.isEmpty()) select.append(" where ");
             int cur = 0;
-            for (String param : params) {
-                cur++;
-                String realParam = lowerFirst(param);
-                select.append("`").append(realParam)
-                        .append("`")
-                        .append(" = ")
-                        .append("#{")
-                        .append(realParam)
-                        .append("}");
-                if (cur < len) select.append(" and ");
-            }
+            appendParams(params, select, len, cur);
             String order = "ASC";
             String orderKey = daoGen.primaryKey();
             if (!orderClause.isEmpty()){
