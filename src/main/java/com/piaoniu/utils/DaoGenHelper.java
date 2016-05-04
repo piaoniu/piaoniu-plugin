@@ -129,11 +129,53 @@ public class DaoGenHelper {
                     || handledWithThisPrefix(key, daoGen::queryPrefix, addQueryOrFind(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::countAllPrefix, addCountAll(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::countPrefix, addCountBy(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::countInPrefix, addCountIn(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::removePrefix, addRemove(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::batchInsertPrefix, addBatchInsert(daoGen, key, method, root))
             )) {
                 throw new Error("unknown method to be auto gen:" + key);
             }
+        };
+    }
+
+    private Consumer<String> addCountIn(DaoGen daoGen, String key, MapperMethod method, Element root) {
+        return (prefix) -> {
+            Element sql = root.addElement("select");
+            sql.addComment(COMMENT);
+            sql.addAttribute("id", key);
+            sql.addAttribute("resultType", "int");
+            String left = key.replaceFirst(prefix, "");
+            List<String> params = split(left, daoGen.separator());
+            StringBuilder select = new StringBuilder(50);
+            select.append("select count(1) from  ")
+                    .append(method.getDaoEnv().getTableName());
+            int len = params.size();
+            if (len != 1)
+                throw new Error("count in method only support one param");
+            if (!params.isEmpty()) select.append(" where ");
+            String param = params.get(0);
+
+            sql.addText(select.toString());
+            if (param.endsWith("s")) param = lowerFirst(param.substring(0,param.length()-1));
+
+            Element choose = sql.addElement("choose");
+            String collection = param+"s";
+            Element when = choose.addElement("when");
+            when.addAttribute("test", collection + " !=null and " + collection + ".size() > 0");
+            when.addText("`" + param + "` in ");
+
+            Element each = when.addElement("foreach");
+            each.addAttribute("item", param);
+            each.addAttribute("collection", param+"s");
+            each.addAttribute("open", "(");
+            each.addAttribute("separator", ",");
+            each.addAttribute("close", ")");
+            each.addText("#{" + param + "}");
+
+            Element otherwise = choose.addElement("otherwise");
+            otherwise.addText(" 1 = 2 ");
+
+            sql.addText(" order by " + daoGen.primaryKey());
         };
     }
 
