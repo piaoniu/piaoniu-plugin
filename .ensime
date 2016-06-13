@@ -7,7 +7,7 @@
  :scala-version
    "2.11.7"
  :java-home
-   "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-2.b14.fc23.x86_64"
+   "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-6.b14.fc23.x86_64"
  :java-flags
    ()
  :subprojects
@@ -36,7 +36,7 @@
         "/home/enzo/.m2/repository/org/springframework/spring-expression/4.1.6.RELEASE/spring-expression-4.1.6.RELEASE.jar"
         "/home/enzo/.m2/repository/org/springframework/spring-aop/4.1.6.RELEASE/spring-aop-4.1.6.RELEASE.jar"
         "/home/enzo/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"
-        "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-2.b14.fc23.x86_64/jre/../lib/tools.jar"
+        "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-6.b14.fc23.x86_64/jre/../lib/tools.jar"
         "/home/enzo/work/pn/piaoniu-plugin/target/classes")
      :compile-deps
        ("/home/enzo/.m2/repository/com/google/guava/guava/18.0/guava-18.0.jar"
@@ -59,7 +59,7 @@
         "/home/enzo/.m2/repository/org/springframework/spring-expression/4.1.6.RELEASE/spring-expression-4.1.6.RELEASE.jar"
         "/home/enzo/.m2/repository/org/springframework/spring-aop/4.1.6.RELEASE/spring-aop-4.1.6.RELEASE.jar"
         "/home/enzo/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"
-        "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-2.b14.fc23.x86_64/jre/../lib/tools.jar")
+        "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-6.b14.fc23.x86_64/jre/../lib/tools.jar")
      :test-deps
        ("/home/enzo/.m2/repository/com/google/guava/guava/18.0/guava-18.0.jar"
         "/home/enzo/.m2/repository/org/dom4j/dom4j/2.0.0-RC1/dom4j-2.0.0-RC1.jar"
@@ -84,7 +84,7 @@
         "/home/enzo/.m2/repository/org/springframework/spring-expression/4.1.6.RELEASE/spring-expression-4.1.6.RELEASE.jar"
         "/home/enzo/.m2/repository/org/springframework/spring-aop/4.1.6.RELEASE/spring-aop-4.1.6.RELEASE.jar"
         "/home/enzo/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"
-        "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-2.b14.fc23.x86_64/jre/../lib/tools.jar")
+        "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-6.b14.fc23.x86_64/jre/../lib/tools.jar")
      :source-roots
        ("/home/enzo/work/pn/piaoniu-plugin/src/main/java"
         "/home/enzo/work/pn/piaoniu-plugin/src/main/groovy"
