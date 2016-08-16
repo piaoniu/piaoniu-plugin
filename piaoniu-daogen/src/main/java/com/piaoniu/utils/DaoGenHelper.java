@@ -3,7 +3,7 @@ package com.piaoniu.utils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.piaoniu.annotations.DaoGen;
+import com.piaoniu.permission.annotations.DaoGen;
 import com.piaoniu.generator.dao.DaoEnv;
 import com.piaoniu.generator.dao.MapperMethod;
 import com.sun.source.util.Trees;

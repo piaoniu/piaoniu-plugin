@@ -1,4 +1,4 @@
-package com.piaoniu.annotations;
+package com.piaoniu.permission.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NoPermission {
+public @interface NeedPermission {
 
 	String value();
 }

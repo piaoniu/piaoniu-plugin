@@ -1,7 +1,7 @@
 package com.piaoniu.plugin;
 
-import com.piaoniu.annotations.NeedPermission;
-import com.piaoniu.annotations.NoPermission;
+import com.piaoniu.permission.annotations.NeedPermission;
+import com.piaoniu.permission.annotations.NoPermission;
 import com.sun.tools.javac.code.Symbol;
 
 import javax.annotation.processing.*;
@@ -9,6 +9,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
 @SupportedAnnotationTypes("org.springframework.web.bind.annotation.RequestMapping")
@@ -24,11 +25,24 @@ public class NeedPermissionProcessor extends AbstractProcessor {
     public void handle(Element element) {
         if (! (element.getKind() == ElementKind.METHOD)) return;
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) element;
-        NeedPermission needPermission = methodSymbol.getAnnotation(NeedPermission.class);
-        NoPermission noPermission = methodSymbol.getAnnotation(NoPermission.class);
-        if (needPermission == null && noPermission == null) {
-            throw new RuntimeException("No permission configured for " + methodSymbol);
+        if (!(methodSymbol.getEnclosingElement() instanceof Symbol.ClassSymbol)){
+            System.out.println("[PN permission] Unknown parent " + methodSymbol.getEnclosingElement().toString());
+            return;
         }
+        Symbol.ClassSymbol classSymbol = (Symbol.ClassSymbol) methodSymbol.getEnclosingElement();
+        if (!containsAnnotation(methodSymbol,classSymbol,NeedPermission.class)&&!containsAnnotation(methodSymbol,classSymbol,NoPermission.class)){
+            throw new RuntimeException("No permission configured for " + classSymbol + "." + methodSymbol);
+        }
+    }
+
+    private boolean containsAnnotation(Symbol.MethodSymbol methodSymbol,Symbol.ClassSymbol classSymbol,Class<? extends Annotation> clazz){
+        if (methodSymbol.getAnnotation(clazz) != null) {
+            return true;
+        }
+        if (classSymbol.getAnnotation(clazz) != null) {
+            return true;
+        }
+        return false;
     }
 
     @Override
