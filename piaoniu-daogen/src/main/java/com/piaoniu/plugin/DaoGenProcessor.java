@@ -1,7 +1,7 @@
 package com.piaoniu.plugin;
 
 import com.google.common.collect.ImmutableSet;
-import com.piaoniu.permission.annotations.DaoGen;
+import com.piaoniu.annotations.DaoGen;
 import com.piaoniu.generator.dao.DaoEnv;
 import com.piaoniu.generator.dao.MapperMethod;
 import com.piaoniu.utils.DaoGenHelper;

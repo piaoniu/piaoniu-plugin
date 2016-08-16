@@ -1,4 +1,4 @@
-package com.piaoniu.permission.annotations;
+package com.piaoniu.annotations;
 
 public @interface DaoGen {
     String[] insertPrefix() default {"insert"};

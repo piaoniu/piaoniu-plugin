@@ -91,7 +91,8 @@
         "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-daogen/src/main/scala"
         "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-daogen/src/test/java"
         "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-daogen/src/test/groovy"
-        "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-daogen/src/test/scala")
+        "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-daogen/src/test/scala"
+        "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-daogen/src/test/java/../scala")
      :targets
        ("/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-daogen/target/classes")
      :test-targets

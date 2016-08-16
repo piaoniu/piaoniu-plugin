@@ -91,7 +91,8 @@
         "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-permission/src/main/scala"
         "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-permission/src/test/java"
         "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-permission/src/test/groovy"
-        "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-permission/src/test/scala")
+        "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-permission/src/test/scala"
+        "/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-permission/src/test/java/../scala")
      :targets
        ("/Users/yihua/pn_workspace/piaoniu-plugin/piaoniu-permission/target/classes")
      :test-targets

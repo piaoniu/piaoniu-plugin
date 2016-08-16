@@ -1,7 +1,6 @@
 package com.piaoniu.generator.dao;
 
-import com.google.common.collect.Sets;
-import com.piaoniu.permission.annotations.DaoGen;
+import com.piaoniu.annotations.DaoGen;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Type;
 
