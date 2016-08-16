@@ -18,6 +18,12 @@
     <dependency>
       <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>pull-parser</artifactId>
+          <groupId>pull-parser</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
