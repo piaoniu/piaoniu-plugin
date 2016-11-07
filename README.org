@@ -1,3 +1,5 @@
 * piaoniu-plugin
 
 ** dao-gen
+
+项目已迁移到 http://git.oschina.net/piaoniu/pndao
