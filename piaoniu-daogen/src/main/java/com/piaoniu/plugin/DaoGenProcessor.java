@@ -1,6 +1,7 @@
 package com.piaoniu.plugin;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.util.concurrent.ExecutionError;
 import com.piaoniu.annotations.DaoGen;
 import com.piaoniu.generator.dao.DaoEnv;
 import com.piaoniu.generator.dao.MapperMethod;
@@ -80,15 +81,20 @@ public class DaoGenProcessor  extends AbstractProcessor {
         DaoEnv daoEnv = new DaoEnv(daoGen,classSymbol);
         Function<Symbol.MethodSymbol,MapperMethod> gen = (methodSymbol -> DaoGenHelper.toMapperMethod(daoEnv, methodSymbol));
 
-        Map<String,MapperMethod> methodMap =
-                daoGenHelper.getMember(Symbol.MethodSymbol.class, ElementKind.METHOD, classSymbol)
-                .stream()
-                .filter(methodSymbol1 -> !methodsInObjects.contains(methodSymbol1.getSimpleName().toString()))
-                .filter(m -> m.getAnnotationMirrors()
-                        .stream()
-                        .noneMatch(c -> c.getAnnotationType().toString().contains("org.apache.ibatis.annotations")))
-                        .collect(Collectors.toMap(DaoGenHelper::getMethodName, gen));
-        return daoGenHelper.mixMethodToData(daoGen, classSymbol.toString(),methodMap,data);
+        try{
+            Map<String,MapperMethod> methodMap =
+                    daoGenHelper.getMember(Symbol.MethodSymbol.class, ElementKind.METHOD, classSymbol)
+                            .stream()
+                            .filter(methodSymbol1 -> !methodsInObjects.contains(methodSymbol1.getSimpleName().toString()))
+                            .filter(m -> m.getAnnotationMirrors()
+                                    .stream()
+                                    .noneMatch(c -> c.getAnnotationType().toString().contains("org.apache.ibatis.annotations")))
+                            .collect(Collectors.toMap(DaoGenHelper::getMethodName, gen));
+            return daoGenHelper.mixMethodToData(daoGen, classSymbol.toString(),methodMap,data);
+        }catch (Exception e){
+            messager.printMessage(Diagnostic.Kind.ERROR,"error happened in " + classSymbol.toString());
+            throw e;
+        }
     }
 
     @Override
