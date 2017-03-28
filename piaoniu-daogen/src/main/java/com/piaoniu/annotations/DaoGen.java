@@ -28,7 +28,7 @@ public @interface DaoGen {
     //String[] count() default {"countBy"};
     String separator() default "And";
 
-    String tablePrefix() default "PN_";
+    String tablePrefix() default "";
 
     String primaryKey() default "id";
 

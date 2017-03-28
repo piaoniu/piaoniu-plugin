@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes("com.piaoniu.annotations.DaoGen")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedOptions("tablePrefix")
 public class DaoGenProcessor  extends AbstractProcessor {
     public static final String PATH = "com.piaoniu.annotations.DaoGen";
 
@@ -34,10 +35,12 @@ public class DaoGenProcessor  extends AbstractProcessor {
     private Messager messager;
     private Filer filer;
     private DaoGenHelper daoGenHelper;
+    private String tablePrefix;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
+        tablePrefix = processingEnv.getOptions().get("tablePrefix");
         this.trees = Trees.instance(processingEnv);
         this.messager = processingEnv.getMessager();
         this.filer = processingEnv.getFiler();
@@ -78,7 +81,7 @@ public class DaoGenProcessor  extends AbstractProcessor {
 
     private String genNewXml(String data, Symbol.ClassSymbol classSymbol) {
         DaoGen daoGen = classSymbol.getAnnotation(DaoGen.class);
-        DaoEnv daoEnv = new DaoEnv(daoGen,classSymbol);
+        DaoEnv daoEnv = new DaoEnv(daoGen, classSymbol, tablePrefix);
         Function<Symbol.MethodSymbol,MapperMethod> gen = (methodSymbol -> DaoGenHelper.toMapperMethod(daoEnv, methodSymbol));
 
         try{
