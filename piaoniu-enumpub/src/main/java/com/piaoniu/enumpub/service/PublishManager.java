@@ -19,7 +19,7 @@ public abstract class PublishManager {
                     ScanUtil.getClasses(p).stream()
                             .filter(c -> c.getAnnotation(EnumPub.class)!=null)
                             .forEach(c -> {
-                                saveNames(c.getSimpleName(),c.getName());
+                                saveNames(c.getName(),c.getSimpleName());
                             });
                 }
         );
