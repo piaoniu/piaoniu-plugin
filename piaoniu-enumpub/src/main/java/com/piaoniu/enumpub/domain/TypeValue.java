@@ -7,10 +7,12 @@ public class TypeValue {
     private String desc;
 
     public static TypeValue of(int value, String desc){
-        TypeValue typeValue = new TypeValue();
-        typeValue.setValue(value);
-        typeValue.setDesc(desc);
-        return typeValue;
+        return new TypeValue(value,desc);
+    }
+
+    TypeValue(int value, String desc){
+        this.value = value;
+        this.desc = desc;
     }
 
     private void setValue(int value){
