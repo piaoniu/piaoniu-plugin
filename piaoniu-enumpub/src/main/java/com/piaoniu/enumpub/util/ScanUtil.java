@@ -75,6 +75,7 @@ public class ScanUtil {
                                             // 添加到classes
                                             classes.add(Class.forName(packageName + '.' + className));
                                         } catch (ClassNotFoundException e) {
+                                        } catch (NoClassDefFoundError ex) {
                                         }
                                     }
                                 }
@@ -85,7 +86,7 @@ public class ScanUtil {
                 }
             }
         } catch (IOException e) {
-        }
+        } catch (Exception e){}
 
         return classes;
     }
