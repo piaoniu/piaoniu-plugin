@@ -7,11 +7,11 @@ import java.util.List;
 
 public abstract class PublishManager {
 
-    abstract void saveNames(String name,String simpleName);
+    public abstract void saveNames(String name,String simpleName);
 
-    abstract String getRealName(String simpleName);
+    public abstract String getRealName(String simpleName);
 
-    abstract List<String> getSimpleNames();
+    public abstract List<String> getSimpleNames();
 
     public void init(List<String> packageNames){
         packageNames.forEach(
