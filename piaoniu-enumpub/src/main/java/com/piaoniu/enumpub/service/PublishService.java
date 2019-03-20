@@ -1,6 +1,6 @@
-package com.piaoniu.service;
+package com.piaoniu.enumpub.service;
 
-import com.piaoniu.domain.TypeValue;
+import com.piaoniu.enumpub.domain.TypeValue;
 
 import java.util.List;
 

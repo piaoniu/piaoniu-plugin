@@ -1,4 +1,4 @@
-package com.piaoniu.domain;
+package com.piaoniu.enumpub.domain;
 
 public class TypeValue {
 

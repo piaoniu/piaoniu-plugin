@@ -1,6 +1,6 @@
-package com.piaoniu.plugin;
+package com.piaoniu.enumpub.plugin;
 
-import com.piaoniu.annotations.EnumPub;
+import com.piaoniu.enumpub.annotations.EnumPub;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
@@ -14,7 +14,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
-@SupportedAnnotationTypes("com.piaoniu.annotations.EnumPub")
+@SupportedAnnotationTypes("com.piaoniu.enumpub.annotations.EnumPub")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class EnumPubProcessor extends AbstractProcessor {
 

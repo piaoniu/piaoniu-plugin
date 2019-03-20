@@ -1,7 +1,7 @@
-package com.piaoniu.plugin;
+package com.piaoniu.enumpub.plugin;
 
-import com.piaoniu.annotations.EnumPub;
-import com.piaoniu.service.PublishManager;
+import com.piaoniu.enumpub.annotations.EnumPub;
+import com.piaoniu.enumpub.service.PublishManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;

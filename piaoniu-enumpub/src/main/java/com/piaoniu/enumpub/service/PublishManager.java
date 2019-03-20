@@ -1,4 +1,4 @@
-package com.piaoniu.service;
+package com.piaoniu.enumpub.service;
 
 import java.util.List;
 

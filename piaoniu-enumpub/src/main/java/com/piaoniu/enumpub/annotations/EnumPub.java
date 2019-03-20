@@ -1,4 +1,4 @@
-package com.piaoniu.annotations;
+package com.piaoniu.enumpub.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

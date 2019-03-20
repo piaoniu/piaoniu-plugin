@@ -1,6 +1,6 @@
-package com.piaoniu.plugin;
+package com.piaoniu.enumpub.plugin;
 
-import com.piaoniu.annotations.EnumPub;
+import com.piaoniu.enumpub.annotations.EnumPub;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.tree.JCTree;

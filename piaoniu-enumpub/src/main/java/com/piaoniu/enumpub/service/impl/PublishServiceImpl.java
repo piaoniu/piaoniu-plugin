@@ -1,9 +1,9 @@
-package com.piaoniu.service.impl;
+package com.piaoniu.enumpub.service.impl;
 
 import com.google.common.collect.Lists;
-import com.piaoniu.domain.TypeValue;
-import com.piaoniu.service.PublishManager;
-import com.piaoniu.service.PublishService;
+import com.piaoniu.enumpub.domain.TypeValue;
+import com.piaoniu.enumpub.service.PublishManager;
+import com.piaoniu.enumpub.service.PublishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
