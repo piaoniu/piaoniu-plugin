@@ -24,7 +24,7 @@ public class EnumPubTreeTranslator extends TreeTranslator {
     Names names;
     EnumPub enumPub;
 
-    public EnumPubTreeTranslator(TreeMaker treeMaker, Names names, EnumPub enumPub){
+    public EnumPubTreeTranslator(TreeMaker treeMaker, Names names, EnumPub enumPub) {
         this.treeMaker = treeMaker;
         this.names = names;
         this.enumPub = enumPub;
@@ -43,43 +43,43 @@ public class EnumPubTreeTranslator extends TreeTranslator {
                 .filter(k -> k.getKind().equals(Tree.Kind.METHOD))
                 .map(tree -> (JCTree.JCMethodDecl) tree)
                 .collect(Collectors.toList());
-        if (!hasMethod(jcMethodDecls,"getValue")){
-            jcClassDecl.defs = jcClassDecl.defs.append(createGetValueMethod(jcVariableDecls));
+        if (!hasMethod(jcMethodDecls, "getValue")) {
+            jcClassDecl.defs = jcClassDecl.defs.append(createGetValueMethod(jcClassDecl, jcVariableDecls));
         }
-        if (!hasMethod(jcMethodDecls,"getDesc")){
-            jcClassDecl.defs = jcClassDecl.defs.append(createGetDescMethod(jcVariableDecls));
+        if (!hasMethod(jcMethodDecls, "getDesc")) {
+            jcClassDecl.defs = jcClassDecl.defs.append(createGetDescMethod(jcClassDecl, jcVariableDecls));
         }
 
         super.visitClassDef(jcClassDecl);
     }
 
-    private boolean hasMethod(List<JCTree.JCMethodDecl> jcMethodDecls, String methodName){
+    private boolean hasMethod(List<JCTree.JCMethodDecl> jcMethodDecls, String methodName) {
         return jcMethodDecls.stream().anyMatch(e -> e.getName().toString().equals(methodName));
     }
 
 
-    private JCTree.JCMethodDecl createGetValueMethod(JCTree.JCClassDecl jcClassDecl, List<JCTree.JCVariableDecl> jcVariableDecls){
+    private JCTree.JCMethodDecl createGetValueMethod(JCTree.JCClassDecl jcClassDecl, List<JCTree.JCVariableDecl> jcVariableDecls) {
         Optional<JCTree.JCVariableDecl> valueVariableDecl = jcVariableDecls.stream()
                 .filter(e -> e.name.toString().equals(enumPub.value()))
                 .findAny();
-        if (!valueVariableDecl.isPresent()){
-            throw new NoSuchElementException("no param value"+jcClassDecl.getSimpleName());
+        if (!valueVariableDecl.isPresent()) {
+            throw new NoSuchElementException("no param value" + jcClassDecl.getSimpleName());
         }
         return createGetMethod(valueVariableDecl.get(), names.fromString("getValue"));
     }
 
-    private JCTree.JCMethodDecl createGetDescMethod(JCTree.JCClassDecl jcClassDecl, List<JCTree.JCVariableDecl> jcVariableDecls){
+    private JCTree.JCMethodDecl createGetDescMethod(JCTree.JCClassDecl jcClassDecl, List<JCTree.JCVariableDecl> jcVariableDecls) {
         Optional<JCTree.JCVariableDecl> valueVariableDecl = jcVariableDecls.stream()
                 .filter(e -> e.name.toString().equals(enumPub.desc()))
                 .findAny();
-        if (!valueVariableDecl.isPresent()){
-            throw new NoSuchElementException("no param desc"+jcClassDecl.getSimpleName());
+        if (!valueVariableDecl.isPresent()) {
+            throw new NoSuchElementException("no param desc" + jcClassDecl.getSimpleName());
         }
         return createGetMethod(valueVariableDecl.get(), names.fromString("getDesc"));
     }
 
 
-    private JCTree.JCMethodDecl createGetMethod(JCTree.JCVariableDecl jcVariableDecl, Name methodName){
+    private JCTree.JCMethodDecl createGetMethod(JCTree.JCVariableDecl jcVariableDecl, Name methodName) {
         //方法的访问级别
         JCTree.JCModifiers modifiers = treeMaker.Modifiers(Flags.PUBLIC);
         //设置返回值类型
