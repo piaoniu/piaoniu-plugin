@@ -20,4 +20,12 @@ public class TypeValue {
     private void setDesc(String desc){
         this.desc = desc;
     }
+
+    private int getValue(int value){
+        return this.value;
+    }
+
+    private String getDesc(String desc){
+        return this.desc;
+    }
 }
