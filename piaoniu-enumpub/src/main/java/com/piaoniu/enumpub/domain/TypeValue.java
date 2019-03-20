@@ -1,6 +1,8 @@
 package com.piaoniu.enumpub.domain;
 
-public class TypeValue {
+import java.io.Serializable;
+
+public class TypeValue implements Serializable {
 
     private Integer value;
 
