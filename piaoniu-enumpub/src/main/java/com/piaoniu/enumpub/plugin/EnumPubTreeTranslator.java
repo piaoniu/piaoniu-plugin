@@ -10,7 +10,10 @@ import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -55,18 +58,24 @@ public class EnumPubTreeTranslator extends TreeTranslator {
     }
 
 
-    private JCTree.JCMethodDecl createGetValueMethod(List<JCTree.JCVariableDecl> jcVariableDecls){
-        JCTree.JCVariableDecl valueVariableDecl = jcVariableDecls.stream()
+    private JCTree.JCMethodDecl createGetValueMethod(JCTree.JCClassDecl jcClassDecl, List<JCTree.JCVariableDecl> jcVariableDecls){
+        Optional<JCTree.JCVariableDecl> valueVariableDecl = jcVariableDecls.stream()
                 .filter(e -> e.name.toString().equals(enumPub.value()))
-                .findAny().get();
-        return createGetMethod(valueVariableDecl, names.fromString("getValue"));
+                .findAny();
+        if (!valueVariableDecl.isPresent()){
+            throw new NoSuchElementException("no param value"+jcClassDecl.getSimpleName());
+        }
+        return createGetMethod(valueVariableDecl.get(), names.fromString("getValue"));
     }
 
-    private JCTree.JCMethodDecl createGetDescMethod(List<JCTree.JCVariableDecl> jcVariableDecls){
-        JCTree.JCVariableDecl valueVariableDecl = jcVariableDecls.stream()
+    private JCTree.JCMethodDecl createGetDescMethod(JCTree.JCClassDecl jcClassDecl, List<JCTree.JCVariableDecl> jcVariableDecls){
+        Optional<JCTree.JCVariableDecl> valueVariableDecl = jcVariableDecls.stream()
                 .filter(e -> e.name.toString().equals(enumPub.desc()))
-                .findAny().get();
-        return createGetMethod(valueVariableDecl, names.fromString("getDesc"));
+                .findAny();
+        if (!valueVariableDecl.isPresent()){
+            throw new NoSuchElementException("no param desc"+jcClassDecl.getSimpleName());
+        }
+        return createGetMethod(valueVariableDecl.get(), names.fromString("getDesc"));
     }
 
 
