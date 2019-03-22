@@ -4,18 +4,18 @@ import java.io.Serializable;
 
 public class TypeValue implements Serializable {
 
-    private Integer value;
+    private String value;
 
     private String desc;
 
-    public static TypeValue of(int value, String desc){
+    public static TypeValue of(String value, String desc){
         TypeValue typeValue = new TypeValue();
         typeValue.setValue(value);
         typeValue.setDesc(desc);
         return typeValue;
     }
 
-    public TypeValue(int value, String desc){
+    public TypeValue(String value, String desc){
         TypeValue typeValue = new TypeValue();
         typeValue.setValue(value);
         typeValue.setDesc(desc);
@@ -23,7 +23,7 @@ public class TypeValue implements Serializable {
 
     TypeValue(){}
 
-    private void setValue(int value){
+    private void setValue(String value){
         this.value = value;
     }
 
@@ -31,7 +31,7 @@ public class TypeValue implements Serializable {
         this.desc = desc;
     }
 
-    private int getValue(int value){
+    private String getValue(String value){
         return this.value;
     }
 

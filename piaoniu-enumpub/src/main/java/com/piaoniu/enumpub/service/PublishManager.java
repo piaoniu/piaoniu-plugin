@@ -34,7 +34,7 @@ public abstract class PublishManager {
         return getSimpleNames();
     }
 
-    public List<Map<String, Object>> publishEnum(String enumName) {
+    public List<Map<String, String>> publishEnum(String enumName) {
         try{
             Class enumClass = getEnumClass(enumName);
             Object[] objects = enumClass.getEnumConstants();
@@ -42,8 +42,8 @@ public abstract class PublishManager {
             Method getDesc = enumClass.getMethod("getDesc");
             return Lists.newArrayList(objects).stream().map(o -> {
                         try{
-                            Map<String, Object> map = Maps.newHashMap();
-                            map.put("value", Integer.valueOf(getValue.invoke(o).toString()));
+                            Map<String, String> map = Maps.newHashMap();
+                            map.put("value", getValue.invoke(o).toString());
                             map.put("desc", getDesc.invoke(o).toString());
                             return map;
                         }catch (Exception e){
