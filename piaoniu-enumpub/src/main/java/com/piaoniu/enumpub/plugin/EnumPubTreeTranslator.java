@@ -63,7 +63,7 @@ public class EnumPubTreeTranslator extends TreeTranslator {
                 .filter(e -> e.name.toString().equals(enumPub.value()))
                 .findAny();
         if (!valueVariableDecl.isPresent()) {
-            throw new NoSuchElementException("no param value" + jcClassDecl.getSimpleName());
+            throw new NoSuchElementException("no param value: " + enumPub.value() + " from class " + jcClassDecl.getKind().name() + jcClassDecl.getSimpleName());
         }
         return createGetMethod(valueVariableDecl.get(), names.fromString("getValue"));
     }
