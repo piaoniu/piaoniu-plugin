@@ -34,6 +34,12 @@ public class EnumPubTreeTranslator extends TreeTranslator {
     @Override
     public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
 
+        //继承注解的枚举不生成方法
+        if (jcClassDecl.sym.getNestingKind().isNested()){
+            super.visitClassDef(jcClassDecl);
+            return;
+        }
+
         List<JCTree.JCVariableDecl> jcVariableDecls = jcClassDecl.defs.stream()
                 .filter(k -> k.getKind().equals(Tree.Kind.VARIABLE))
                 .map(tree -> (JCTree.JCVariableDecl) tree)
