@@ -165,7 +165,7 @@ public class DaoGenHelper {
             int cur = 0;
             appendParams(params, select, len, cur);
 
-            select.append(" > #{").append(daoGen.primaryKey()).append("} order by ").append(daoGen.primaryKey()).append(" ASC ")
+            select.append(" > #{primary} order by ").append(daoGen.primaryKey()).append(" ASC ")
                 .append(" limit #{limit}");
             sql.addText(select.toString());
         };
@@ -185,7 +185,7 @@ public class DaoGenHelper {
                     .append(" from ")
                     .append(method.getDaoEnv().getTableName())
                     .append(" where ").append(daoGen.primaryKey())
-                    .append(" > #{").append(daoGen.primaryKey()).append("} order by ").append(daoGen.primaryKey()).append(" ASC ")
+                    .append(" > #{primary} order by ").append(daoGen.primaryKey()).append(" ASC ")
                     .append(" limit #{limit}");
             sql.addText(select.toString());
         };
