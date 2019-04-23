@@ -13,6 +13,10 @@ public @interface DaoGen {
 
     String[] queryInPrefix() default {"queryIn"};
 
+    String[] queryWithPrimaryPrefix() default {"queryWithPrimary"};
+
+    String[] queryWithPrimaryByPrefix() default {"queryWithPrimaryBy"};
+
     String[] updatePrefix() default {"update"};
 
     String[] updateForPrefix() default {"updateFor"};

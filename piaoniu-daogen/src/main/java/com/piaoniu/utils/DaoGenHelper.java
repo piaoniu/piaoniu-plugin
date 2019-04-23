@@ -136,9 +136,58 @@ public class DaoGenHelper {
                     || handledWithThisPrefix(key, daoGen::countInPrefix, addCountIn(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::removePrefix, addRemove(daoGen, key, method, root))
                     || handledWithThisPrefix(key, daoGen::batchInsertPrefix, addBatchInsert(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::queryWithPrimaryPrefix, addQueryWithPrimary(daoGen, key, method, root))
+                    || handledWithThisPrefix(key, daoGen::queryWithPrimaryByPrefix, addQueryWithPrimaryBy(daoGen, key, method, root))
             )) {
                 throw new Error("unknown method to be auto gen:" + key);
             }
+        };
+    }
+
+    private Consumer<String> addQueryWithPrimaryBy(DaoGen daoGen, String key, MapperMethod method, Element root) {
+        return (prefix) -> {
+            Element sql = root.addElement("select");
+            sql.addComment(COMMENT);
+            sql.addAttribute("id", key);
+            sql.addAttribute("resultType", method.getReturnType().toString());
+
+            StringBuilder select = new StringBuilder(50);
+            List<String> fields = getFields(method.getReturnType());
+            select.append("select ")
+                    .append(Joiner.on(", ").join(fields.stream().map(f -> "`" + f + "`").iterator()))
+                    .append(" from ")
+                    .append(method.getDaoEnv().getTableName());
+
+            String left = key.replaceFirst(prefix, "");
+            List<String> params = split(left, daoGen.separator());
+            int len = params.size();
+            if (!params.isEmpty()) select.append(" where ");
+            int cur = 0;
+            appendParams(params, select, len, cur);
+
+            select.append(" > #{").append(daoGen.primaryKey()).append("} order by ").append(daoGen.primaryKey()).append(" ASC ")
+                .append(" limit #{limit}");
+            sql.addText(select.toString());
+        };
+    }
+
+    private Consumer<String> addQueryWithPrimary(DaoGen daoGen, String key, MapperMethod method, Element root) {
+        return (prefix) -> {
+            Element sql = root.addElement("select");
+            sql.addComment(COMMENT);
+            sql.addAttribute("id", key);
+            sql.addAttribute("resultType", method.getReturnType().toString());
+
+            StringBuilder select = new StringBuilder(50);
+            List<String> fields = getFields(method.getReturnType());
+            select.append("select ")
+                    .append(Joiner.on(", ").join(fields.stream().map(f-> "`" + f + "`").iterator()))
+                    .append(" from ")
+                    .append(method.getDaoEnv().getTableName())
+                    .append(" where ").append(daoGen.primaryKey())
+                    .append(" > #{").append(daoGen.primaryKey()).append("} order by ").append(daoGen.primaryKey()).append(" ASC ")
+                    .append(" limit #{limit}");
+            sql.addText(select.toString());
         };
     }
 
