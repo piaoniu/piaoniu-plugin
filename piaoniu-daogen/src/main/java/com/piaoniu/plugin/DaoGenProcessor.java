@@ -89,13 +89,15 @@ public class DaoGenProcessor  extends AbstractProcessor {
                     daoGenHelper.getMember(Symbol.MethodSymbol.class, ElementKind.METHOD, classSymbol)
                             .stream()
                             .filter(methodSymbol1 -> !methodsInObjects.contains(methodSymbol1.getSimpleName().toString()))
-                            .filter(m -> m.getAnnotationMirrors()
+                            .filter(m ->
+                                    //存在注解
+                                    m.getAnnotationMirrors()
                                     .stream()
                                     .noneMatch(c -> c.getAnnotationType().toString().contains("org.apache.ibatis.annotations")))
                             .collect(Collectors.toMap(DaoGenHelper::getMethodName, gen));
             return daoGenHelper.mixMethodToData(daoGen, classSymbol.toString(),methodMap,data);
         }catch (Exception e){
-            messager.printMessage(Diagnostic.Kind.ERROR,"error happened in " + classSymbol.toString());
+            messager.printMessage(Diagnostic.Kind.ERROR,"error happened in " + classSymbol.toString() + e.toString());
             throw e;
         }
     }
