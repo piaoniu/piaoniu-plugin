@@ -94,7 +94,7 @@ public class DaoGenProcessor  extends AbstractProcessor {
                                     m.getAnnotationMirrors()
                                     .stream()
                                     .noneMatch(c -> c.getAnnotationType().toString().contains("org.apache.ibatis.annotations")))
-                            .collect(Collectors.toMap(DaoGenHelper::getMethodName, gen));
+                            .collect(Collectors.toMap(DaoGenHelper::getMethodName, gen, (a,b)->a));
             return daoGenHelper.mixMethodToData(daoGen, classSymbol.toString(),methodMap,data);
         }catch (Exception e){
             messager.printMessage(Diagnostic.Kind.ERROR,"error happened in " + classSymbol.toString() + e.toString());
